@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LumenIndex</title>
+    <link rel="icon" type="image/png" href="/static/lumenindex-icon.png?v=20260702-reindex-progress" />
+    <link rel="shortcut icon" type="image/png" href="/static/lumenindex-icon.png?v=20260702-reindex-progress" />
+    <link rel="apple-touch-icon" href="/static/lumenindex-icon.png?v=20260702-reindex-progress" />
+    <link rel="stylesheet" href="/static/vendor/katex/katex.min.css" />
+    <link rel="stylesheet" href="/static/app.css?v=20260702-reindex-progress" />
+  </head>
+  <body>
+    <div class="app-frame">
+      <header class="global-top glass-panel">
+        <div class="global-brand">
+          <img class="brand-icon" src="/static/lumenindex-icon.png" alt="" />
+          <img class="brand-wordmark" src="/static/lumenindex-wordmark.png" alt="LumenIndex" />
+        </div>
+        <div class="top-actions">
+          <button id="manageBtn" class="top-settings-btn" type="button" title="Manage users and assets" aria-label="Manage users and assets" hidden>
+            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Manage</span>
+          </button>
+          <button id="settingsBtn" class="top-settings-btn" type="button" title="Settings" aria-label="Settings">
+            <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.6-1H2.8a2 2 0 1 1 0-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 1 1 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6V2.8a2 2 0 1 1 4 0V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+            <span>Settings</span>
+          </button>
+        </div>
+        <div class="user-chip">
+          <span id="currentUserLabel"></span>
+          <button id="logoutBtn" class="top-settings-btn compact" type="button">Sign out</button>
+        </div>
+      </header>
+      <div class="app-shell">
+        <aside class="left-sidebar">
+          <section class="history-panel glass-panel">
+            <div class="history-head">
+              <h2>History</h2>
+            </div>
+            <div id="historyList" class="history-list"></div>
+            <button id="newChatBtn" class="start-chat-btn" type="button">
+              <span>Start a new chat</span>
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </section>
+
+          <section id="documentPanel" class="documents-panel glass-panel">
+            <div class="panel-head document-head">
+              <h2>Documents</h2>
+            </div>
+            <button id="uploadDocBtn" class="upload-documents-btn" type="button">
+              <span>Upload new documents</span>
+              <small>PDF, DOCX, DOC, Markdown</small>
+              <span class="upload-documents-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              </span>
+            </button>
+            <input id="fileInput" type="file" multiple accept=".pdf,.doc,.docx,.md,.markdown" />
+            <input id="chatFileInput" type="file" multiple accept=".pdf,.doc,.docx,.md,.markdown" />
+            <div id="uploadQueue" class="upload-queue"></div>
+            <div class="doc-controls">
+              <input id="docSearchInput" class="search-input" type="search" placeholder="Search documents" />
+              <select id="docSortSelect" aria-label="Sort documents">
+                <option value="recent">Recent first</option>
+                <option value="name">Name A-Z</option>
+                <option value="status">Status</option>
+                <option value="size">Largest first</option>
+              </select>
+            </div>
+            <div id="docList" class="doc-list"></div>
+          </section>
+        </aside>
+
+        <section id="outlinePanel" class="outline-panel glass-panel" aria-hidden="true">
+          <div class="panel-head">
+            <h2>Outline</h2>
+            <button id="closeOutlineBtn" class="icon-btn" type="button" title="Collapse outline" aria-label="Collapse outline">
+              <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+          </div>
+          <input id="treeFilter" class="search-input" placeholder="Filter outline" />
+          <div id="docMeta" class="doc-meta"></div>
+          <div id="treeView" class="tree-view"></div>
+          <div id="outlinePreview" class="outline-preview"></div>
+        </section>
+
+        <main id="chatPanel" class="chat-panel glass-panel">
+          <div class="chat-head">
+            <div>
+              <h1>Chat</h1>
+              <span id="chatMeta">New conversation</span>
+            </div>
+            <div class="segmented" role="tablist">
+              <button class="mode-btn active" data-mode="standard" type="button">Standard</button>
+              <button class="mode-btn" data-mode="react" type="button">Deep</button>
+            </div>
+          </div>
+          <div id="messages" class="messages"></div>
+          <form id="chatForm" class="composer">
+            <div id="attachedDocs" class="attached-docs"></div>
+            <div class="composer-row">
+              <button id="attachChatFileBtn" class="icon-btn attach-btn" type="button" title="Attach files" aria-label="Attach files">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+              <textarea id="questionInput" rows="2" placeholder="Message LumenIndex"></textarea>
+              <button id="cancelAskBtn" class="send-btn cancel-ask" type="button" title="Stop" aria-label="Stop" hidden>
+                <svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+              </button>
+              <button class="send-btn" title="Send" aria-label="Send">
+                <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              </button>
+            </div>
+          </form>
+          <div id="chatDropOverlay" class="drop-overlay">Drop to attach</div>
+        </main>
+      </div>
+    </div>
+
+    <section id="authScreen" class="auth-screen">
+      <div class="auth-card glass-panel">
+        <img class="auth-logo" src="/static/lumenindex-wordmark.png" alt="LumenIndex" />
+        <h1>Sign in to LumenIndex</h1>
+        <p>Use your private workspace for documents and conversations.</p>
+        <form id="authForm">
+          <label>Username<input name="username" autocomplete="username" required minlength="3" /></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" required minlength="8" /></label>
+          <div id="authError" class="auth-error" role="alert" aria-live="polite" hidden></div>
+          <div class="auth-actions">
+            <button id="loginBtn" class="primary" type="submit">Sign in</button>
+            <button id="openRegisterBtn" class="secondary" type="button" data-register-action="register">Create account</button>
+            <button id="openRegisterAdminBtn" class="secondary admin-create-btn" type="button" data-register-action="register-admin">Create admin account</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <dialog id="registerDialog" class="register-dialog glass-panel">
+      <form id="registerForm" method="dialog">
+        <div class="dialog-head">
+          <div>
+            <h2 id="registerTitle">Create account</h2>
+            <p id="registerHelp">Create a private workspace account.</p>
+          </div>
+          <button class="icon-btn" value="cancel" aria-label="Close" title="Close">
+            <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <label>Username<input name="username" autocomplete="username" required minlength="3" /></label>
+        <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
+        <label>Confirm password<input name="confirm_password" type="password" autocomplete="new-password" required minlength="8" /></label>
+        <div id="registerError" class="auth-error" role="alert" aria-live="polite" hidden></div>
+        <div class="dialog-actions">
+          <button value="cancel" class="secondary">Cancel</button>
+          <button id="submitRegisterBtn" value="default" class="primary">Create account</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="docContextMenu" class="context-menu" role="menu" aria-hidden="true">
+      <button type="button" data-action="rename">Rename</button>
+      <button type="button" data-action="reindex">Reindex</button>
+      <button type="button" data-action="delete" class="danger-menu">Delete</button>
+    </div>
+
+    <dialog id="confirmDialog" class="confirm-dialog glass-panel">
+      <form method="dialog">
+        <h2 id="confirmTitle">Confirm action</h2>
+        <p id="confirmMessage"></p>
+        <div class="dialog-actions">
+          <button id="confirmCancelBtn" value="cancel" class="secondary">Cancel</button>
+          <button id="confirmOkBtn" value="default" class="primary danger-primary">Delete</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="renameDialog" class="rename-dialog glass-panel">
+      <form id="renameForm" method="dialog">
+        <div class="dialog-head">
+          <div>
+            <h2>Rename document</h2>
+            <p id="renameHelp">Update the display name used in chat and search.</p>
+          </div>
+          <button class="icon-btn" value="cancel" aria-label="Close" title="Close">
+            <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <label>Document name<input id="renameInput" name="name" autocomplete="off" required maxlength="240" /></label>
+        <div id="renameError" class="auth-error" role="alert" aria-live="polite" hidden></div>
+        <div class="dialog-actions">
+          <button value="cancel" class="secondary">Cancel</button>
+          <button id="renameSaveBtn" value="default" class="primary">Rename</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog" class="settings-dialog glass-panel">
+      <form id="settingsForm" method="dialog">
+        <div class="dialog-head">
+          <h2>Settings</h2>
+          <button class="icon-btn" value="cancel" aria-label="Close" title="Close">
+            <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="tabs">
+          <button type="button" class="tab active" data-tab="api">API</button>
+          <button type="button" class="tab" data-tab="model">Model</button>
+          <button type="button" class="tab" data-tab="advanced">Advanced</button>
+        </div>
+        <div class="tab-panel active" data-panel="api">
+          <label>Protocol<select name="api_protocol"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option></select></label>
+          <label>API URL<input name="api_url" autocomplete="off" /></label>
+          <label>API Key<input name="api_key" type="password" autocomplete="new-password" placeholder="Leave blank to keep current key" /></label>
+          <div class="settings-test-row">
+            <button id="testSettingsBtn" type="button" class="secondary">Test connection</button>
+            <span id="settingsTestStatus" class="settings-test-status" role="status" aria-live="polite"></span>
+          </div>
+        </div>
+        <div class="tab-panel" data-panel="model">
+          <label>Model<input name="model" list="modelList" /></label>
+          <datalist id="modelList">
+            <option value="gpt-4o-mini"></option>
+            <option value="gpt-4o"></option>
+            <option value="claude-3-5-sonnet-latest"></option>
+            <option value="qwen3.7-max"></option>
+          </datalist>
+          <label>Timeout<input name="timeout" type="number" min="5" max="600" /></label>
+          <label>Max output tokens<input name="max_output_tokens" type="number" min="512" max="40000" /></label>
+        </div>
+        <div class="tab-panel" data-panel="advanced">
+          <label>Context window K<input name="context_window_k" type="number" min="1" max="200" /></label>
+          <label>Step budget<input name="step_budget" type="number" min="10" max="100" /></label>
+          <label class="check-row"><input name="deep_thinking" type="checkbox" /> Use Deep mode by default</label>
+          <label class="check-row"><input name="context_enabled" type="checkbox" /> Use session memory</label>
+          <button id="clearCacheBtn" type="button" class="secondary">Clear cache</button>
+        </div>
+        <div class="dialog-actions">
+          <button value="cancel" class="secondary">Cancel</button>
+          <button id="saveSettingsBtn" value="default" class="primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="adminDialog" class="admin-dialog glass-panel">
+      <form method="dialog">
+        <div class="dialog-head">
+          <div>
+            <h2>Manage</h2>
+            <p>Admin view for users, documents, and conversations.</p>
+          </div>
+          <button class="icon-btn" value="cancel" aria-label="Close" title="Close">
+            <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div id="adminContent" class="admin-content"></div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast"></div>
+    <script src="/static/vendor/katex/katex.min.js"></script>
+    <script src="/static/app.js?v=20260702-reindex-progress" type="module"></script>
+  </body>
+</html>

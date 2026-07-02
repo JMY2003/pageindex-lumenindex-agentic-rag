@@ -1,0 +1,29 @@
+services:
+  lumenindex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lumenindex:latest
+    container_name: lumenindex
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8765
+      PAGEINDEX_MAX_UPLOAD_MB: ${PAGEINDEX_MAX_UPLOAD_MB:-200}
+      PAGEINDEX_INDEX_WORKERS: ${PAGEINDEX_INDEX_WORKERS:-3}
+      PAGEINDEX_LOG_LEVEL: ${PAGEINDEX_LOG_LEVEL:-INFO}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+      - ./app_settings.json:/app/app_settings.json
+      - ./pageindex_web.sqlite3:/app/pageindex_web.sqlite3
+      - ${HOME}/.zshrc:/root/.zshrc:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/api/health', timeout=5).read()"]
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 20s

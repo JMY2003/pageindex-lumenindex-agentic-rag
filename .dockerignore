@@ -1,0 +1,18 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+.venv-*/
+.conda/
+cache/
+uploads/
+logs/
+app_settings.json
+pageindex_web.sqlite3*
+.git/
+.github/
+docs/
+tests/
+logos/
+README.md
+pageindex web app description.txt

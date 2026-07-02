@@ -1,0 +1,13 @@
+.ipynb_checkpoints
+__pycache__
+.DS_Store
+.venv/
+.venv-pageindex-web/
+.venv-*/
+.conda/
+cache/
+uploads/
+logs/
+app_settings.json
+pageindex_web.sqlite3*
+pageindex web app description.txt
